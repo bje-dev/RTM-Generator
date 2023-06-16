@@ -1,0 +1,11 @@
+C:\Users\b-j-e\source\repos\RTM-Generator\RTM Generator\RTM Generator\obj\Debug\RTM Generator.csproj.AssemblyReference.cache
+C:\Users\b-j-e\source\repos\RTM-Generator\RTM Generator\RTM Generator\obj\Debug\RTM Generator.csproj.SuggestedBindingRedirects.cache
+C:\Users\b-j-e\source\repos\RTM-Generator\RTM Generator\RTM Generator\obj\Debug\RTM_Generator.Form1.resources
+C:\Users\b-j-e\source\repos\RTM-Generator\RTM Generator\RTM Generator\obj\Debug\RTM_Generator.Properties.Resources.resources
+C:\Users\b-j-e\source\repos\RTM-Generator\RTM Generator\RTM Generator\obj\Debug\RTM Generator.csproj.GenerateResource.cache
+C:\Users\b-j-e\source\repos\RTM-Generator\RTM Generator\RTM Generator\obj\Debug\RTM Generator.csproj.CoreCompileInputs.cache
+C:\Users\b-j-e\source\repos\RTM-Generator\RTM Generator\RTM Generator\bin\Debug\RTM Generator.exe.config
+C:\Users\b-j-e\source\repos\RTM-Generator\RTM Generator\RTM Generator\bin\Debug\RTM Generator.exe
+C:\Users\b-j-e\source\repos\RTM-Generator\RTM Generator\RTM Generator\bin\Debug\RTM Generator.pdb
+C:\Users\b-j-e\source\repos\RTM-Generator\RTM Generator\RTM Generator\obj\Debug\RTM Generator.exe
+C:\Users\b-j-e\source\repos\RTM-Generator\RTM Generator\RTM Generator\obj\Debug\RTM Generator.pdb
