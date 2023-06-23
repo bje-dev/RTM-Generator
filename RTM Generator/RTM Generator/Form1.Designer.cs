@@ -69,7 +69,6 @@
             this.label9 = new System.Windows.Forms.Label();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
             this.label12 = new System.Windows.Forms.Label();
-            this.textBox3 = new System.Windows.Forms.TextBox();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -461,19 +460,11 @@
             this.label12.TabIndex = 54;
             this.label12.Text = "RTM - Generator - V1.0";
             // 
-            // textBox3
-            // 
-            this.textBox3.Location = new System.Drawing.Point(442, 178);
-            this.textBox3.Name = "textBox3";
-            this.textBox3.Size = new System.Drawing.Size(410, 20);
-            this.textBox3.TabIndex = 55;
-            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1002, 450);
-            this.Controls.Add(this.textBox3);
             this.Controls.Add(this.label12);
             this.Controls.Add(this.groupBox4);
             this.Controls.Add(this.groupBox3);
@@ -539,7 +530,6 @@
         private System.Windows.Forms.GroupBox groupBox4;
         private System.Windows.Forms.ComboBox comboBox21;
         private System.Windows.Forms.Label label12;
-        private System.Windows.Forms.TextBox textBox3;
     }
 }
 

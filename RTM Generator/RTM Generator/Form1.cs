@@ -132,11 +132,37 @@ namespace RTM_Generator
 
         }
 
-
-
-
         private void button1_Click(object sender, EventArgs e)
         {
+
+            string cppCode = @"
+            const char* ssid = ""{paramNameNetwork}"";
+            const char* password = ""{paramPassNetwork}"";
+            const char* host = ""{paramServ1}.{paramServ2}.{paramServ3}.{paramServ4}"";//poner el Ip del servidor
+            const char* lugar =""{paramLugar}"";
+
+
+            IPAddress staticIP({paramIp1}, {paramIp2}, {paramIp3}, paramIp4); // Dirección IP fija deseada
+            IPAddress gateway({paramGate1}, {paramGate2}, {paramGate3}, {paramGate4});    // Dirección IP de tu router
+            IPAddress subnet({paramMask1}, {paramMask2}, {paramMask3}, {paramMask4});   // Máscara de subred
+
+
+            /*** Variables para Humedad y Temperatura ****/
+            float temperatura = 0;
+            float progresiva = {paramKm}.{paramKmDec};
+            int dispositivo = {paramDev};
+            String url;
+
+            #define DS18B20 5 //DS18B20 esta conectado al pin GPIO D5 del NodeMCU
+
+            WiFiClient client;
+            AsyncWebServer server({paramPortServer});
+            OneWire ourWire(DS18B20);// Se declara un objeto para la libreria
+            DallasTemperature sensor(&ourWire);// Se declara un objeto para la otra libreria
+           
+            
+            ";
+
             string modo = comboBox1.SelectedItem as string;
 
             string nameNetwork = textBox1.Text as string;
@@ -170,8 +196,7 @@ namespace RTM_Generator
             string km = comboBox20.SelectedItem as string;
             string kmDec = comboBox21.SelectedItem as string;
 
-            
-
+           
 
             if (string.IsNullOrEmpty(modo))
             {
@@ -210,34 +235,6 @@ namespace RTM_Generator
                 MessageBox.Show("Debe seleccionar la progresiva de ubicacion correspondiente.");
                 return;
             }
-
-            string cppCode = @"
-            const char* ssid = ""{paramNameNetwork}"";
-            const char* password = ""{paramPassNetwork}"";
-            const char* host = ""{paramServ1}.{paramServ2}.{paramServ3}.{paramServ4}"";//poner el Ip del servidor
-            const char* lugar =""{paramLugar}"";
-
-
-            IPAddress staticIP({paramIp1}, {paramIp2}, {paramIp3}, paramIp4); // Dirección IP fija deseada
-            IPAddress gateway({paramGate1}, {paramGate2}, {paramGate3}, {paramGate4});    // Dirección IP de tu router
-            IPAddress subnet({paramMask1}, {paramMask2}, {paramMask3}, {paramMask4});   // Máscara de subred
-
-
-            /*** Variables para Humedad y Temperatura ****/
-            float temperatura = 0;
-            float progresiva = {paramKm}.{paramKmDec};
-            int dispositivo = {paramDev};
-            String url;
-
-            #define DS18B20 5 //DS18B20 esta conectado al pin GPIO D5 del NodeMCU
-
-            WiFiClient client;
-            AsyncWebServer server({paramPortServer});
-            OneWire ourWire(DS18B20);// Se declara un objeto para la libreria
-            DallasTemperature sensor(&ourWire);// Se declara un objeto para la otra libreria
-           
-            
-            ";
 
             string updatedCode = generator.UpdateParamInCPP(cppCode,
               "{nameNetwork}", nameNetwork,
@@ -295,16 +292,7 @@ namespace RTM_Generator
                 }
             }
 
-
-           
-
-
-
         }
-
-
-
-
 
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -324,12 +312,32 @@ namespace RTM_Generator
 
             }
         }
-
-        
     }
 
     public class ArduinoINOGenerator
     {
+
+        public void GenerateINOFile(string filePath, string cppCode)
+        {
+            // Crea un nuevo archivo .ino
+            using (StreamWriter writer = new StreamWriter(filePath))
+            {
+                // Escribe el contenido del archivo .ino
+                writer.WriteLine("// Código .ino generado por C#");
+                writer.WriteLine();
+
+                writer.WriteLine("#include <ESP8266WiFi.h>");
+                writer.WriteLine("#include <ESPAsyncWebServer.h>");
+                writer.WriteLine("#include <OneWire.h>");
+                writer.WriteLine("#include <DallasTemperature.h>");
+
+                writer.WriteLine();
+
+                writer.WriteLine(cppCode);
+            }
+        }
+
+
         public string UpdateParamInCPP(string cppCode, 
             string paramNameNetwork, string valueNameNetwork, 
             string paramPassNetwork, string valuePassNetwork,
@@ -357,54 +365,32 @@ namespace RTM_Generator
             )
         {
             // Reemplazar el marcador con el valor proporcionado
-            string updatedCode = cppCode.Replace(paramNameNetwork, valueNameNetwork)
-                                        .Replace(paramPassNetwork, valuePassNetwork)
-                                        .Replace(paramIp1, valueIp1)
-                                        .Replace(paramIp2, valueIp2)
-                                        .Replace(paramIp3, valueIp3)
-                                        .Replace(paramIp4, valueIp4)
-                                        .Replace(paramMask1, valueMask1)
-                                        .Replace(paramMask2, valueMask2)
-                                        .Replace(paramMask3, valueMask3)
-                                        .Replace(paramMask4, valueMask4)
-                                        .Replace(paramGate1, valueGate1)
-                                        .Replace(paramGate2, valueGate2)
-                                        .Replace(paramGate3, valueGate3)
-                                        .Replace(paramGate4, valueGate4)
-                                        .Replace(paramServer1, valueServer1)
-                                        .Replace(paramServer2, valueServer2)
-                                        .Replace(paramServer3, valueServer3)
-                                        .Replace(paramServer4, valueServer4)
-                                        .Replace(paramPortServer, valuePortServer)
-                                        .Replace(paramKm, valueKm)
-                                        .Replace(paramKmDec, valueKmDec)
-                                        .Replace(paramLugar, valueLugar)
-                                        .Replace(paramDev, valueDev)
-                                        ;
+            string updatedCode = cppCode.Replace(paramNameNetwork, valueNameNetwork);
+                   updatedCode = updatedCode.Replace(paramPassNetwork, valuePassNetwork);
+                   updatedCode = updatedCode.Replace(paramIp1, valueIp1);
+                   updatedCode = updatedCode.Replace(paramIp2, valueIp2);
+                   updatedCode = updatedCode.Replace(paramIp3, valueIp3);
+                   updatedCode = updatedCode.Replace(paramIp4, valueIp4);
+                   updatedCode = updatedCode.Replace(paramMask1, valueMask1);
+                   updatedCode = updatedCode.Replace(paramMask2, valueMask2);
+                   updatedCode = updatedCode.Replace(paramMask3, valueMask3);
+                   updatedCode = updatedCode.Replace(paramMask4, valueMask4);
+                   updatedCode = updatedCode.Replace(paramGate1, valueGate1);
+                   updatedCode = updatedCode.Replace(paramGate2, valueGate2);
+                   updatedCode = updatedCode.Replace(paramGate3, valueGate3);
+                   updatedCode = updatedCode.Replace(paramGate4, valueGate4);
+                   updatedCode = updatedCode.Replace(paramServer1, valueServer1);
+                   updatedCode = updatedCode.Replace(paramServer2, valueServer2);
+                   updatedCode = updatedCode.Replace(paramServer3, valueServer3);
+                   updatedCode = updatedCode.Replace(paramServer4, valueServer4);
+                   updatedCode = updatedCode.Replace(paramPortServer, valuePortServer);
+                   updatedCode = updatedCode.Replace(paramKm, valueKm);
+                   updatedCode = updatedCode.Replace(paramKmDec, valueKmDec);
+                   updatedCode = updatedCode.Replace(paramLugar, valueLugar);
+                   updatedCode = updatedCode.Replace(paramDev, valueDev);
+                   ;
 
             return updatedCode;
         }
-
-        public void GenerateINOFile(string filePath, string cppCode)
-        {
-            // Crea un nuevo archivo .ino
-            using (StreamWriter writer = new StreamWriter(filePath))
-            {
-                // Escribe el contenido del archivo .ino
-                writer.WriteLine("// Código .ino generado por C#");
-                writer.WriteLine();
-
-                writer.WriteLine("#include <ESP8266WiFi.h>");
-                writer.WriteLine("#include <ESPAsyncWebServer.h>");
-                writer.WriteLine("#include <OneWire.h>");
-                writer.WriteLine("#include <DallasTemperature.h>");
-
-                writer.WriteLine();
-
-                writer.WriteLine(cppCode);
-            }
-        }
-
-       
     }
 }
