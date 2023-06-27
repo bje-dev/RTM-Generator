@@ -129,39 +129,46 @@ namespace RTM_Generator
                 comboBox21.Items.Add(d.ToString());
             }
 
+            comboBox22.Items.Add("80");
+            comboBox22.Items.Add("443");
+            comboBox22.Items.Add("8080");
+            comboBox22.Items.Add("8081");
+            comboBox22.Items.Add("8082");
+            comboBox22.Items.Add("8083");
+            comboBox22.Items.Add("8084");
+            comboBox22.Items.Add("8085");
+            comboBox22.Items.Add("8086");
+            comboBox22.Items.Add("8087");
+            comboBox22.Items.Add("8088");
+            comboBox22.Items.Add("8089");
+            comboBox22.Items.Add("8001");
+            comboBox22.Items.Add("8002");
+            comboBox22.Items.Add("8003");
+            comboBox22.Items.Add("8004");
+            comboBox22.Items.Add("8005");
+            comboBox22.Items.Add("8006");
+            comboBox22.Items.Add("8007");
+            comboBox22.Items.Add("8008");
+            comboBox22.Items.Add("8009");
+            comboBox22.Items.Add("8010");
+            comboBox22.Items.Add("8020");
+            comboBox22.Items.Add("8030");
+            comboBox22.Items.Add("8040");
+            comboBox22.Items.Add("8050");
+            comboBox22.Items.Add("8060");
+            comboBox22.Items.Add("8070");
+            comboBox22.Items.Add("8080");
+            comboBox22.Items.Add("8090");
+            comboBox22.Items.Add("8100");
+            comboBox22.Items.Add("8200");
+            comboBox22.Items.Add("8300");
+            comboBox22.Items.Add("8400");
+            comboBox22.Items.Add("8500");
 
         }
 
         private void button1_Click(object sender, EventArgs e)
         {
-
-            string cppCode = @"
-            const char* ssid = ""{paramNameNetwork}"";
-            const char* password = ""{paramPassNetwork}"";
-            const char* host = ""{paramServ1}.{paramServ2}.{paramServ3}.{paramServ4}"";//poner el Ip del servidor
-            const char* lugar =""{paramLugar}"";
-
-
-            IPAddress staticIP({paramIp1}, {paramIp2}, {paramIp3}, paramIp4); // Dirección IP fija deseada
-            IPAddress gateway({paramGate1}, {paramGate2}, {paramGate3}, {paramGate4});    // Dirección IP de tu router
-            IPAddress subnet({paramMask1}, {paramMask2}, {paramMask3}, {paramMask4});   // Máscara de subred
-
-
-            /*** Variables para Humedad y Temperatura ****/
-            float temperatura = 0;
-            float progresiva = {paramKm}.{paramKmDec};
-            int dispositivo = {paramDev};
-            String url;
-
-            #define DS18B20 5 //DS18B20 esta conectado al pin GPIO D5 del NodeMCU
-
-            WiFiClient client;
-            AsyncWebServer server({paramPortServer});
-            OneWire ourWire(DS18B20);// Se declara un objeto para la libreria
-            DallasTemperature sensor(&ourWire);// Se declara un objeto para la otra libreria
-           
-            
-            ";
 
             string modo = comboBox1.SelectedItem as string;
 
@@ -195,24 +202,28 @@ namespace RTM_Generator
 
             string km = comboBox20.SelectedItem as string;
             string kmDec = comboBox21.SelectedItem as string;
+            string portDevice = comboBox22.SelectedItem as string;
 
-           
 
             if (string.IsNullOrEmpty(modo))
             {
                 MessageBox.Show("Selecciona el modo de operacion");
                 return;
-            }else if (string.IsNullOrEmpty(nameNetwork) && modo == "Wireless")
+            } else if (string.IsNullOrEmpty(nameNetwork) && modo == "Wireless")
             {
                 MessageBox.Show("Indica el SSID de la red WIFI.");
                 return;
-            }else if (string.IsNullOrEmpty(passNetwork) && modo == "Wireless")
+            } else if (string.IsNullOrEmpty(passNetwork) && modo == "Wireless")
             {
                 MessageBox.Show("Introduce la contraseña de la red WIFI.");
                 return;
-            }else if (string.IsNullOrEmpty(ip1) || string.IsNullOrEmpty(ip2) || string.IsNullOrEmpty(ip3) || string.IsNullOrEmpty(ip4))
+            } else if (string.IsNullOrEmpty(ip1) || string.IsNullOrEmpty(ip2) || string.IsNullOrEmpty(ip3) || string.IsNullOrEmpty(ip4))
             {
                 MessageBox.Show("Debe completar correctamente los campos de IP del dispositivo.");
+                return;
+            } else if (string.IsNullOrEmpty(portDevice))
+            {
+                MessageBox.Show("Selecciona el PUERTO de acceso al dispositivo.");
                 return;
             } else if (string.IsNullOrEmpty(mask1) || string.IsNullOrEmpty(mask2) || string.IsNullOrEmpty(mask3) || string.IsNullOrEmpty(mask4))
             {
@@ -222,19 +233,53 @@ namespace RTM_Generator
             {
                 MessageBox.Show("Debe completar correctamente los campos de PUERTA DE ENLACE del dispositivo.");
                 return;
+            } else if (string.IsNullOrEmpty(portServer))
+            {
+                MessageBox.Show("Selecciona el PUERTO de acceso al dispositivo.");
+                return;
             } else if (string.IsNullOrEmpty(server1) || string.IsNullOrEmpty(server2) || string.IsNullOrEmpty(server3) || string.IsNullOrEmpty(server4))
             {
                 MessageBox.Show("Debe completar correctamente los campos del SERVIDOR remoto.");
                 return;
-            }else if (string.IsNullOrEmpty(lugarDev))
+            } else if (string.IsNullOrEmpty(lugarDev))
             {
                 MessageBox.Show("Selecciona el lugar donde se ubica el dispositivo.");
                 return;
-            }else if (string.IsNullOrEmpty(km) || string.IsNullOrEmpty(kmDec))
+            } else if (string.IsNullOrEmpty(km) || string.IsNullOrEmpty(kmDec))
             {
                 MessageBox.Show("Debe seleccionar la progresiva de ubicacion correspondiente.");
                 return;
             }
+
+
+            string cppCode = @"
+            const char* ssid = ""{nameNetwork}"";
+            const char* password = ""{passNetwork}"";
+            const char* host = ""{server1}.{server2}.{server3}.{server4}"";//poner el Ip del servidor
+            const char* lugar =""{lugarDev}"";
+
+
+            IPAddress staticIP({ip1}, {ip2}, {ip3}, {ip4}); // Dirección IP fija deseada
+            IPAddress gateway({gate1}, {gate2}, {gate3}, {gate4});    // Dirección IP de tu router
+            IPAddress subnet({mask1}, {mask2}, {mask3}, {mask4});   // Máscara de subred
+
+
+            /*** Variables para Humedad y Temperatura ****/
+            float temperatura = 0;
+            float progresiva = {km}.{kmDec};
+            int dispositivo = {deviceId};
+            String url;
+
+            #define DS18B20 5 //DS18B20 esta conectado al pin GPIO D5 del NodeMCU
+
+            WiFiClient client;
+            AsyncWebServer server({portServer});
+            OneWire ourWire(DS18B20);// Se declara un objeto para la libreria
+            DallasTemperature sensor(&ourWire);// Se declara un objeto para la otra libreria
+           
+            
+            ";
+
 
             string updatedCode = generator.UpdateParamInCPP(cppCode,
               "{nameNetwork}", nameNetwork,
@@ -388,7 +433,6 @@ namespace RTM_Generator
                    updatedCode = updatedCode.Replace(paramKmDec, valueKmDec);
                    updatedCode = updatedCode.Replace(paramLugar, valueLugar);
                    updatedCode = updatedCode.Replace(paramDev, valueDev);
-                   ;
 
             return updatedCode;
         }
