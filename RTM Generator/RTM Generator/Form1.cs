@@ -165,6 +165,8 @@ namespace RTM_Generator
             comboBox22.Items.Add("8400");
             comboBox22.Items.Add("8500");
 
+            checkBox1.Checked = false;
+
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -204,8 +206,10 @@ namespace RTM_Generator
             string kmDec = comboBox21.SelectedItem as string;
             string portDevice = comboBox22.SelectedItem as string;
 
+        if (checkBox1.Checked==false)
+            {
 
-            if (string.IsNullOrEmpty(modo))
+            if (string.IsNullOrEmpty(modo) || modo=="")
             {
                 MessageBox.Show("Selecciona el modo de operacion");
                 return;
@@ -233,15 +237,16 @@ namespace RTM_Generator
             {
                 MessageBox.Show("Debe completar correctamente los campos de PUERTA DE ENLACE del dispositivo.");
                 return;
-            } else if (string.IsNullOrEmpty(portServer))
-            {
-                MessageBox.Show("Selecciona el PUERTO de acceso al dispositivo.");
-                return;
             } else if (string.IsNullOrEmpty(server1) || string.IsNullOrEmpty(server2) || string.IsNullOrEmpty(server3) || string.IsNullOrEmpty(server4))
             {
                 MessageBox.Show("Debe completar correctamente los campos del SERVIDOR remoto.");
                 return;
-            } else if (string.IsNullOrEmpty(lugarDev))
+            } else if (string.IsNullOrEmpty(portServer))
+            {
+                MessageBox.Show("Selecciona el PUERTO del servidor remoto.");
+                return;
+            }
+                else if(string.IsNullOrEmpty(lugarDev) || lugarDev=="")
             {
                 MessageBox.Show("Selecciona el lugar donde se ubica el dispositivo.");
                 return;
@@ -249,10 +254,9 @@ namespace RTM_Generator
             {
                 MessageBox.Show("Debe seleccionar la progresiva de ubicacion correspondiente.");
                 return;
-            }
-
-
-            string cppCode = @"
+            }else if (modo=="Wireless")
+            {
+                string cppCode = @"
             const char* ssid = ""{nameNetwork}"";
             const char* password = ""{passNetwork}"";
             const char* host = ""{server1}.{server2}.{server3}.{server4}"";//poner el Ip del servidor
@@ -279,64 +283,196 @@ namespace RTM_Generator
            
             
             ";
+                string updatedCode = generator.UpdateParamInCPP(cppCode,
+             "{nameNetwork}", nameNetwork,
+             "{passNetwork}", passNetwork,
+             "{ip1}", ip1,
+             "{ip2}", ip2,
+             "{ip3}", ip3,
+             "{ip4}", ip4,
+             "{mask1}", mask1,
+             "{mask2}", mask2,
+             "{mask3}", mask3,
+             "{mask4}", mask4,
+             "{gate1}", gate1,
+             "{gate2}", gate2,
+             "{gate3}", gate3,
+             "{gate4}", gate4,
+             "{server1}", server1,
+             "{server2}", server2,
+             "{server3}", server3,
+             "{server4}", server4,
+             "{portServer}", portServer,
+             "{km}", km,
+             "{kmDec}", kmDec,
+             "{lugarDev}", lugarDev,
+             "{deviceId}", deviceId
+             );
 
-
-            string updatedCode = generator.UpdateParamInCPP(cppCode,
-              "{nameNetwork}", nameNetwork,
-              "{passNetwork}", passNetwork,
-              "{ip1}", ip1,
-              "{ip2}", ip2,
-              "{ip3}", ip3,
-              "{ip4}", ip4,
-              "{mask1}", mask1,
-              "{mask2}", mask2,
-              "{mask3}", mask3,
-              "{mask4}", mask4,
-              "{gate1}", gate1,
-              "{gate2}", gate2,
-              "{gate3}", gate3,
-              "{gate4}", gate4,
-              "{server1}", server1,
-              "{server2}", server2,
-              "{server3}", server3,
-              "{server4}", server4,
-              "{portServer}", portServer,
-              "{km}", km,
-              "{kmDec}", kmDec,
-              "{lugarDev}", lugarDev,
-              "{deviceId}", deviceId
-              );
-
-
-            using (FolderBrowserDialog folderDialog = new FolderBrowserDialog())
-            {
-                // Establecer la descripción del diálogo
-                folderDialog.Description = "Seleccionar directorio";
-
-                // Mostrar el diálogo y verificar si el usuario hizo clic en "Aceptar"
-                if (folderDialog.ShowDialog() == DialogResult.OK)
+                using (FolderBrowserDialog folderDialog = new FolderBrowserDialog())
                 {
-                    string directorioSeleccionado = folderDialog.SelectedPath;
-                    // Hacer algo con el directorio seleccionado
-                    // Por ejemplo, mostrarlo en un TextBox
-                    string directorioConvertido = directorioSeleccionado.Replace("\\", "\\\\");
+                    // Establecer la descripción del diálogo
+                    folderDialog.Description = "Seleccionar directorio";
 
-                    string folderName = "Wireless";
-                    string folderPath = Path.Combine(directorioConvertido, folderName);
+                    // Mostrar el diálogo y verificar si el usuario hizo clic en "Aceptar"
+                    if (folderDialog.ShowDialog() == DialogResult.OK)
+                    {
+                        string directorioSeleccionado = folderDialog.SelectedPath;
+                        // Hacer algo con el directorio seleccionado
+                        // Por ejemplo, mostrarlo en un TextBox
+                        string directorioConvertido = directorioSeleccionado.Replace("\\", "\\\\");
 
-                    Directory.CreateDirectory(folderPath);
+                        string folderName = "Wireless";
+                        string folderPath = Path.Combine(directorioConvertido, folderName);
 
-                    // Directorio donde se guardara el archivo .ino
-                    string fileName = "Wireless.ino";
-                    string filePath = Path.Combine(folderPath, fileName);
+                        Directory.CreateDirectory(folderPath);
 
-                    //Generador del archivo .ino
-                    generator.GenerateINOFile(filePath, updatedCode);
+                        // Directorio donde se guardara el archivo .ino
+                        string fileName = "Wireless.ino";
+                        string filePath = Path.Combine(folderPath, fileName);
 
-                    MessageBox.Show("Archivo .ino generado correctamente.");
+                        //Generador del archivo .ino
+                        generator.GenerateINOFile(filePath, updatedCode);
+
+                        MessageBox.Show("Archivo .ino generado correctamente.");
+                    }
+                }
+
+            }
+            else if(modo=="Ethernet")
+            {
+
+                string cppCode = @"
+            const char* ssid = ""{nameNetwork}"";
+            const char* password = ""{passNetwork}"";
+            const char* host = ""{server1}.{server2}.{server3}.{server4}"";//poner el Ip del servidor
+            const char* lugar =""{lugarDev}"";
+
+
+            IPAddress staticIP({ip1}, {ip2}, {ip3}, {ip4}); // Dirección IP fija deseada
+            IPAddress gateway({gate1}, {gate2}, {gate3}, {gate4});    // Dirección IP de tu router
+            IPAddress subnet({mask1}, {mask2}, {mask3}, {mask4});   // Máscara de subred
+
+
+            /*** Variables para Humedad y Temperatura ****/
+            float temperatura = 0;
+            float progresiva = {km}.{kmDec};
+            int dispositivo = {deviceId};
+            String url;
+
+            #define DS18B20 5 //DS18B20 esta conectado al pin GPIO D5 del NodeMCU
+
+            WiFiClient client;
+            AsyncWebServer server({portServer});
+            OneWire ourWire(DS18B20);// Se declara un objeto para la libreria
+            DallasTemperature sensor(&ourWire);// Se declara un objeto para la otra libreria
+           
+            
+            ";
+                string updatedCode = generator.UpdateParamInCPP(cppCode,
+             "{nameNetwork}", nameNetwork,
+             "{passNetwork}", passNetwork,
+             "{ip1}", ip1,
+             "{ip2}", ip2,
+             "{ip3}", ip3,
+             "{ip4}", ip4,
+             "{mask1}", mask1,
+             "{mask2}", mask2,
+             "{mask3}", mask3,
+             "{mask4}", mask4,
+             "{gate1}", gate1,
+             "{gate2}", gate2,
+             "{gate3}", gate3,
+             "{gate4}", gate4,
+             "{server1}", server1,
+             "{server2}", server2,
+             "{server3}", server3,
+             "{server4}", server4,
+             "{portServer}", portServer,
+             "{km}", km,
+             "{kmDec}", kmDec,
+             "{lugarDev}", lugarDev,
+             "{deviceId}", deviceId
+             );
+
+                using (FolderBrowserDialog folderDialog = new FolderBrowserDialog())
+                {
+                    // Establecer la descripción del diálogo
+                    folderDialog.Description = "Seleccionar directorio";
+
+                    // Mostrar el diálogo y verificar si el usuario hizo clic en "Aceptar"
+                    if (folderDialog.ShowDialog() == DialogResult.OK)
+                    {
+                        string directorioSeleccionado = folderDialog.SelectedPath;
+                        // Hacer algo con el directorio seleccionado
+                        // Por ejemplo, mostrarlo en un TextBox
+                        string directorioConvertido = directorioSeleccionado.Replace("\\", "\\\\");
+
+                        string folderName = "Wireless";
+                        string folderPath = Path.Combine(directorioConvertido, folderName);
+
+                        Directory.CreateDirectory(folderPath);
+
+                        // Directorio donde se guardara el archivo .ino
+                        string fileName = "Wireless.ino";
+                        string filePath = Path.Combine(folderPath, fileName);
+
+                        //Generador del archivo .ino
+                        generator.GenerateINOFile(filePath, updatedCode);
+
+                        MessageBox.Show("Archivo .ino generado correctamente.");
+                    }
                 }
             }
+        }
+        else if(checkBox1.Checked==true)
+        {
 
+                string cppCode = @"
+                void setup() {
+                // initialize digital pin LED_BUILTIN as an output.
+                pinMode(LED_BUILTIN, OUTPUT);
+                }
+
+                // the loop function runs over and over again forever
+                void loop() {
+                digitalWrite(LED_BUILTIN, HIGH);  // turn the LED on (HIGH is the voltage level)
+                delay(500);                      // wait for a second
+                digitalWrite(LED_BUILTIN, LOW);   // turn the LED off by making the voltage LOW
+                delay(500);                      // wait for a second
+                }
+            
+            ";
+
+                using (FolderBrowserDialog folderDialog = new FolderBrowserDialog())
+                {
+                    // Establecer la descripción del diálogo
+                    folderDialog.Description = "Seleccionar directorio";
+
+                    // Mostrar el diálogo y verificar si el usuario hizo clic en "Aceptar"
+                    if (folderDialog.ShowDialog() == DialogResult.OK)
+                    {
+                        string directorioSeleccionado = folderDialog.SelectedPath;
+                        // Hacer algo con el directorio seleccionado
+                        // Por ejemplo, mostrarlo en un TextBox
+                        string directorioConvertido = directorioSeleccionado.Replace("\\", "\\\\");
+
+                        string folderName = "Test";
+                        string folderPath = Path.Combine(directorioConvertido, folderName);
+
+                        Directory.CreateDirectory(folderPath);
+
+                        // Directorio donde se guardara el archivo .ino
+                        string fileName = "Test.ino";
+                        string filePath = Path.Combine(folderPath, fileName);
+
+                        //Generador del archivo .ino
+                        generator.GenerateINOFile(filePath, cppCode);
+
+                        MessageBox.Show("Archivo .ino generado correctamente.");
+                    }
+                }
+            }
         }
 
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
@@ -354,6 +490,30 @@ namespace RTM_Generator
                 textBox2.Enabled = false;
                 label3.Enabled = false;
                 label7 .Enabled = false;
+
+            }
+        }
+
+        private void checkBox1_CheckedChanged(object sender, EventArgs e)
+        {
+            if (checkBox1.Checked==false)
+            {
+                
+                groupBox1.Enabled = Enabled;
+                groupBox2.Enabled = Enabled;
+                groupBox3.Enabled = Enabled;
+                groupBox4.Enabled = Enabled;
+                
+                
+            }
+            else
+            {
+                groupBox1.Enabled = false;
+                groupBox2.Enabled = false;
+                groupBox3.Enabled = false;
+                groupBox4.Enabled = false;
+
+
 
             }
         }
